@@ -676,14 +676,37 @@ export class ZoneDisplay extends ZoneGroup {
 
     }
 
+    public cycleWindow(win: Window, direction: number) {
+
+    }
+
+    public moveWindowToWidget(win: Window, widget: ZoneBase) {
+        win.move_frame(true, widget.innerX, widget.innerY);
+        win.move_resize_frame(true, widget.innerX, widget.innerY, widget.innerWidth, widget.innerHeight);
+    }
+
+    // TODO: DRY
+    public widgetContainsWindow(win: Window): number{
+        let rect = win.get_frame_rect();
+        // grab center of the window
+        let [x, y] = [rect.x, rect.y];
+        let c = this.recursiveChildren();
+        for (let i = 0; i < c.length; i++) {
+            c[i].hide();
+            if (c[i].contains(x, y)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public moveWindowToWidgetAtCursor(win: Window) {
         let [x, y] = global.get_pointer();
         let c = this.recursiveChildren();
         for (let i = 0; i < c.length; i++) {
             c[i].hide();
             if (c[i].contains(x, y)) {
-                win.move_frame(true, c[i].innerX, c[i].innerY);
-                win.move_resize_frame(true, c[i].innerX, c[i].innerY, c[i].innerWidth, c[i].innerHeight);
+                this.moveWindowToWidget(win, c[i]);
             }
         }
     }

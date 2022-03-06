@@ -8,18 +8,8 @@ import * as SETTINGS from "./settings_data";
 
 // Globals
 const pretty_names = {
-    [SETTINGS.PRESET_RESIZE_1]: 'Layout 1',
-    [SETTINGS.PRESET_RESIZE_2]: 'Layout 2',
-    [SETTINGS.PRESET_RESIZE_3]: 'Layout 3',
-    [SETTINGS.PRESET_RESIZE_4]: 'Layout 4',
-    [SETTINGS.PRESET_RESIZE_5]: 'Layout 5',
-    [SETTINGS.PRESET_RESIZE_6]: 'Layout 6',
-    [SETTINGS.PRESET_RESIZE_7]: 'Layout 7',
-    [SETTINGS.PRESET_RESIZE_8]: 'Layout 8',
-    [SETTINGS.PRESET_RESIZE_9]: 'Layout 9',
-    [SETTINGS.PRESET_RESIZE_10]: 'Layout 10',
-    [SETTINGS.PRESET_RESIZE_11]: 'Layout 11',
-    [SETTINGS.PRESET_RESIZE_12]: 'Layout 12',
+    [SETTINGS.PRESET_MOVE_RIGHT]: 'Move right',
+    [SETTINGS.PRESET_MOVE_LEFT]: 'Move left',
 }
 
 function set_child(widget: any, child: any) {

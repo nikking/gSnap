@@ -72,95 +72,11 @@ const keyBindings: Bindings = new Map([
 ]);
 
 const key_bindings_presets: Bindings = new Map([
-    [SETTINGS.PRESET_RESIZE_1, () => {
-        globalApp.setLayout(0);
+    [SETTINGS.PRESET_MOVE_RIGHT, () => {
+        globalApp.cycleZone(1);
     }],
-    [SETTINGS.PRESET_RESIZE_2, () => {
-        globalApp.setLayout(1);
-    }],
-    [SETTINGS.PRESET_RESIZE_3, () => {
-        globalApp.setLayout(2);
-    }],
-    [SETTINGS.PRESET_RESIZE_4, () => {
-        globalApp.setLayout(3);
-    }],
-    [SETTINGS.PRESET_RESIZE_5, () => {
-        globalApp.setLayout(4);
-    }],
-    [SETTINGS.PRESET_RESIZE_6, () => {
-        globalApp.setLayout(5);
-    }],
-    [SETTINGS.PRESET_RESIZE_7, () => {
-        globalApp.setLayout(6);
-    }],
-    [SETTINGS.PRESET_RESIZE_8, () => {
-        globalApp.setLayout(7);
-    }],
-    [SETTINGS.PRESET_RESIZE_9, () => {
-        globalApp.setLayout(8);
-    }],
-    [SETTINGS.PRESET_RESIZE_10, () => {
-        globalApp.setLayout(9);
-    }],
-    [SETTINGS.PRESET_RESIZE_11, () => {
-        globalApp.setLayout(10);
-    }],
-    [SETTINGS.PRESET_RESIZE_12, () => {
-        globalApp.setLayout(11);
-    }],
-    [SETTINGS.PRESET_RESIZE_13, () => {
-        globalApp.setLayout(12);
-    }],
-    [SETTINGS.PRESET_RESIZE_14, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_15, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_16, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_17, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_18, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_19, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_20, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_21, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_22, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_23, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_24, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_25, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_26, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_27, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_28, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_29, () => {
-
-    }],
-    [SETTINGS.PRESET_RESIZE_30, () => {
-
+    [SETTINGS.PRESET_MOVE_LEFT, () => {
+        globalApp.cycleZone(-1);
     }],
 ]);
 
@@ -205,8 +121,50 @@ class App {
     private workspaceSwitchedConnect: any;
     private workareasChangedConnect: any;
 
+    cycleZone(direction: number) {
+        log(`cycle zone with direction: ${direction}`);
+
+        // get current window
+        let win = global.display.get_focus_window();
+
+        let currentMonitorIndex = -1;
+        let currentWidgetIndex = -1;
+        for (let m of activeMonitors()) {
+            currentWidgetIndex = this.tabManager[m.index]!.widgetContainsWindow(win);
+            if (currentWidgetIndex > -1) {
+                currentMonitorIndex = m.index;
+                log(`window is in monitor ${currentMonitorIndex} and widget ${currentWidgetIndex}`)
+                let tabManager = this.tabManager[currentMonitorIndex]!;
+                let newWidgetIndex = currentWidgetIndex + direction;
+                // handle rollover
+                if (tabManager.recursiveChildren()[newWidgetIndex] === undefined) {
+                    // handle monitor rollover
+                    if (activeMonitors().length > 1) {
+                        let newMonitorIndex = currentMonitorIndex + direction;
+                        if (newMonitorIndex === -1) {
+                            newMonitorIndex = activeMonitors().length - 1;
+                        } else if (newMonitorIndex === activeMonitors().length) {
+                            newMonitorIndex = 0;
+                        }
+                        tabManager = this.tabManager[newMonitorIndex]!;
+                    }
+                    // get widget index correct
+                    if (direction === 1) {
+                        newWidgetIndex = 0;
+                    } else {
+                        newWidgetIndex = tabManager!.recursiveChildren().length - 1;
+                    }
+                }
+                tabManager.moveWindowToWidget(win, tabManager.recursiveChildren()[newWidgetIndex]);
+                return;
+            }
+        };
+        // default to widget 0 of current monitor
+        this.tabManager[0]?.moveWindowToWidget(win, this.tabManager[0]?.recursiveChildren()[0]);
+    }
+
     setLayout(layoutIndex: number, monitorIndex = -1) {
-        log("setting layout");
+        log(`setting layout with index ${layoutIndex}`);
         if (this.layouts.definitions.length <= layoutIndex) {
             return;
         }
@@ -228,12 +186,8 @@ class App {
         this.tabManager[monitorIndex]?.destroy();
         this.tabManager[monitorIndex] = null;
 
-        if (gridSettings[SETTINGS.SHOW_TABS]) {
-            this.tabManager[monitorIndex] = new TabbedZoneManager(activeMonitors()[monitorIndex], this.currentLayout, gridSettings[SETTINGS.WINDOW_MARGIN]);
-        } else {
-            this.tabManager[monitorIndex] = new ZoneManager(activeMonitors()[monitorIndex], this.currentLayout, gridSettings[SETTINGS.WINDOW_MARGIN]);
-        }
-       
+        this.tabManager[monitorIndex] = new ZoneManager(activeMonitors()[monitorIndex], this.currentLayout, gridSettings[SETTINGS.WINDOW_MARGIN]);
+
         this.tabManager[monitorIndex]?.layoutWindows();
         this.reloadMenu();
     }
@@ -334,10 +288,27 @@ class App {
                 activeMonitors().forEach(m => {
                     this.tabManager[m.index]?.hide();
                     this.tabManager[m.index]?.moveWindowToWidgetAtCursor(win);
-                    this.tabManager[m.index]?.layoutWindows();
+                    // NK: What does layoutWindows do? Why was it here?
+                    // this.tabManager[m.index]?.layoutWindows();
                 });
             }
         });
+
+        // global.display.connect('accelerator-activated', (display: any, action: any, deviceId: any, timestamp: any) => {
+        //         log(`Accelerator Activated: [display=${display}, action=${action}, deviceId=${deviceId}, timestamp=${timestamp}]`)
+        //     });
+
+        // JS ERROR: Extension gSnap@micahosborne: Error: No signal 'key-press-event' on object 'MetaDisplay'
+        // global.display.connect("key-press-event", (widget: any, event: any, user_data:any) => {
+        //     let [success, keyval] = event.get_keyval(); // integer
+        //     // let keyname = Gdk.keyval_name(keyval); // string keyname
+
+        //     log(`key press: ${keyval}`);
+        
+        //     // if (keyname === "Control_L") {
+        //     //     // Dialog code or eg. this.keys_array.push("<Ctrl>");
+        //     // }
+        // });
 
         this.restackConnection = global.display.connect('restacked', () => {
             activeMonitors().forEach(m => {

@@ -9,6 +9,12 @@ This extensions is developed in freetime.  Developer got to eat, if you like it,
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/micahosborne)
 
+## Nik TODO
+
+- create shortcuts for Alt-J/K to Maximize/Minimize
+- place new windows in a good widget
+- create shift modifier (check how gsnap and popshell have dynamically registered keybindings) to cancel snap
+
 ## Installation
 
 [Install From The Gnome Extensions Page](https://extensions.gnome.org/extension/4442/gsnap/)
@@ -130,19 +136,13 @@ Here is a 3 split configuration, with the column in the middle split into 3 zone
 
 Note: Right now the layouts can only be edited from source.  When I have more time i'll make a configuration file, or even and editor for this.  Feel free to contribute
 
-Default shortcuts for `Super`+`Alt`+`[KP_1..KP_9]`
+Default shortcuts:
 
 Shortcut | Description
 ------------ | -------------
-`Super`+`Alt`+`KP_1` | Preset 1
-`Super`+`Alt`+`KP_2` | Preset 2
-`Super`+`Alt`+`KP_3` | Preset 3
-`Super`+`Alt`+`KP_4` | Preset 4
-`Super`+`Alt`+`KP_5` | Preset 5
-`Super`+`Alt`+`KP_6` | Preset 6
-`Super`+`Alt`+`KP_7` | Preset 7
-`Super`+`Alt`+`KP_8` | Preset 8
-`Super`+`Alt`+`KP_9` | Preset 9
+`Alt`+`L` | Move window right
+`Alt`+`H` | Move window left
+
 
 ## Source code
 

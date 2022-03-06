@@ -1,125 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schemalist>
 	<schema path="/org/gnome/shell/extensions/gsnap/" id="org.gnome.shell.extensions.gsnap" >
-		<key type="as" name="preset-resize-1">
-			<default><![CDATA[['<Super><Alt>KP_1']]]></default>
-			<summary>Preset resize 1.</summary>
+		<key type="as" name="preset-move-right">
+			<default><![CDATA[['<Alt>L']]]></default>
+			<summary>Move window right.</summary>
 		</key>
-		<key type="as" name="preset-resize-2">
-			<default><![CDATA[['<Super><Alt>KP_2']]]></default>
-			<summary>Preset resize 2.</summary>
-		</key>
-		<key type="as" name="preset-resize-3">
-			<default><![CDATA[['<Super><Alt>KP_3']]]></default>
-			<summary>Preset resize 3.</summary>
-		</key>
-		<key type="as" name="preset-resize-4">
-			<default><![CDATA[['<Super><Alt>KP_4']]]></default>
-			<summary>Preset resize 4.</summary>
-		</key>
-		<key type="as" name="preset-resize-5">
-			<default><![CDATA[['<Super><Alt>KP_5']]]></default>
-			<summary>Preset resize 5.</summary>
-		</key>
-		<key type="as" name="preset-resize-6">
-			<default><![CDATA[['<Super><Alt>KP_6']]]></default>
-			<summary>Preset resize 6.</summary>
-		</key>
-		<key type="as" name="preset-resize-7">
-			<default><![CDATA[['<Super><Alt>KP_7']]]></default>
-			<summary>Preset resize 7.</summary>
-		</key>
-		<key type="as" name="preset-resize-8">
-			<default><![CDATA[['<Super><Alt>KP_8']]]></default>
-			<summary>Preset resize 8.</summary>
-		</key>
-		<key type="as" name="preset-resize-9">
-			<default><![CDATA[['<Super><Alt>KP_9']]]></default>
-			<summary>Preset resize 9.</summary>
-		</key>
-		<key type="as" name="preset-resize-10">
-			<default><![CDATA[['']]]></default>
-			<summary>Preset resize 1.</summary>
-		</key>
-		<key type="as" name="preset-resize-11">
-			<default><![CDATA[['<Super><Control>KP_1']]]></default>
-			<summary>Preset resize 11.</summary>
-		</key>
-		<key type="as" name="preset-resize-12">
-			<default><![CDATA[['<Super><Control>KP_2']]]></default>
-			<summary>Preset resize 12.</summary>
-		</key>
-		<key type="as" name="preset-resize-13">
-			<default><![CDATA[['<Super><Control>KP_3']]]></default>
-			<summary>Preset resize 13.</summary>
-		</key>
-		<key type="as" name="preset-resize-14">
-			<default><![CDATA[['<Super><Control>KP_4']]]></default>
-			<summary>Preset resize 14.</summary>
-		</key>
-		<key type="as" name="preset-resize-15">
-			<default><![CDATA[['<Super><Control>KP_5']]]></default>
-			<summary>Preset resize 15.</summary>
-		</key>
-		<key type="as" name="preset-resize-16">
-			<default><![CDATA[['<Super><Control>KP_6']]]></default>
-			<summary>Preset resize 16.</summary>
-		</key>
-		<key type="as" name="preset-resize-17">
-			<default><![CDATA[['<Super><Control>KP_7']]]></default>
-			<summary>Preset resize 17.</summary>
-		</key>
-		<key type="as" name="preset-resize-18">
-			<default><![CDATA[['<Super><Control>KP_8']]]></default>
-			<summary>Preset resize 18.</summary>
-		</key>
-		<key type="as" name="preset-resize-19">
-			<default><![CDATA[['<Super><Control>KP_9']]]></default>
-			<summary>Preset resize 19.</summary>
-		</key>
-		<key type="as" name="preset-resize-20">
-			<default><![CDATA[['']]]></default>
-			<summary>Preset resize 20.</summary>
-		</key>
-		<key type="as" name="preset-resize-21">
-			<default><![CDATA[['<Super><Shift>KP_1']]]></default>
-			<summary>Preset resize 21.</summary>
-		</key>
-		<key type="as" name="preset-resize-22">
-			<default><![CDATA[['<Super><Shift>KP_2']]]></default>
-			<summary>Preset resize 22.</summary>
-		</key>
-		<key type="as" name="preset-resize-23">
-			<default><![CDATA[['<Super><Shift>KP_3']]]></default>
-			<summary>Preset resize 23.</summary>
-		</key>
-		<key type="as" name="preset-resize-24">
-			<default><![CDATA[['<Super><Shift>KP_4']]]></default>
-			<summary>Preset resize 24.</summary>
-		</key>
-		<key type="as" name="preset-resize-25">
-			<default><![CDATA[['<Super><Shift>KP_5']]]></default>
-			<summary>Preset resize 25.</summary>
-		</key>
-		<key type="as" name="preset-resize-26">
-			<default><![CDATA[['<Super><Shift>KP_6']]]></default>
-			<summary>Preset resize 26.</summary>
-		</key>
-		<key type="as" name="preset-resize-27">
-			<default><![CDATA[['<Super><Shift>KP_7']]]></default>
-			<summary>Preset resize 27.</summary>
-		</key>
-		<key type="as" name="preset-resize-28">
-			<default><![CDATA[['<Super><Shift>KP_8']]]></default>
-			<summary>Preset resize 28.</summary>
-		</key>
-		<key type="as" name="preset-resize-29">
-			<default><![CDATA[['<Super><Shift>KP_9']]]></default>
-			<summary>Preset resize 29.</summary>
-		</key>
-		<key type="as" name="preset-resize-30">
-			<default><![CDATA[['']]]></default>
-			<summary>Preset resize 30.</summary>
+		<key type="as" name="preset-move-left">
+			<default><![CDATA[['<Alt>H']]]></default>
+			<summary>Move window left.</summary>
 		</key>
 		<key type = "b" name="show-icon">
 			<default>true</default>
