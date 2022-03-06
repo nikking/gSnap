@@ -2,7 +2,7 @@
   "uuid": "gSnap@micahosborne",
   "name": "gSnap",
   "description": "Organize windows in customizable snap zones like FancyZones on windows.",
-  "version": 6,
+  "version": 99,
   "shell-version": [
       "40",
       "41"
