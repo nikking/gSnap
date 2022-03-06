@@ -5,12 +5,13 @@ import {log} from './logging';
 import {getCurrentPath} from './utils';
 import {ShellVersion} from './shellversion';
 import {bind as bindHotkeys, unbind as unbindHotkeys, Bindings} from './hotkeys';
-import {ZoneEditor, ZonePreview, TabbedZoneManager, EntryDialog, ZoneManager} from "./editor";
+import {ZonePreview, TabbedZoneManager, EntryDialog, ZoneManager} from "./editor";
 
 const Gettext = imports.gettext;
 const _ = Gettext.gettext;
 import {
     Display,
+    GrabOp,
     Window,
     WindowType,
     WorkspaceManager as WorkspaceManagerInterface
@@ -168,7 +169,7 @@ const keyBindingGlobalResizes: Bindings = new Map([
 ]);
 
 class App {
-    private editor: (ZoneEditor | null)[];
+    // private editor: (ZoneEditor | null)[];
     private preview: (ZonePreview | null)[];
     private tabManager: (ZoneManager | null)[];
 
@@ -194,7 +195,7 @@ class App {
 
     constructor() {
         const monitors = activeMonitors().length;
-        this.editor = new Array<ZoneEditor>(monitors);
+        // this.editor = new Array<ZoneEditor>(monitors);
         this.preview = new Array<ZonePreview>(monitors);
         this.tabManager = new Array<ZoneManager>(monitors);
         this.currentLayout = this.layouts.definitions[0];
@@ -205,6 +206,7 @@ class App {
     private workareasChangedConnect: any;
 
     setLayout(layoutIndex: number, monitorIndex = -1) {
+        log("setting layout");
         if (this.layouts.definitions.length <= layoutIndex) {
             return;
         }
@@ -306,8 +308,20 @@ class App {
             
         });
 
-        global.display.connect('grab-op-begin', (_display: Display, win: Window) => {
-            if(validWindow(win)) {
+        // global.display.connect('window-drag-begin', (_display: Display, win: Window) => {
+        //     log("window-drag-begin");
+        // });
+
+        // global.display.connect('window-drag-end', (_display: Display, win: Window) => {
+        //     log("window-drag-end");
+        // });
+
+        // global.display.connect('window-drag-cancelled', (_display: Display, win: Window) => {
+        //     log("window-drag-begin");
+        // });
+
+        global.display.connect('grab-op-begin', (_display: Display, win: Window, op: GrabOp) => {
+            if(validWindow(win) && op == GrabOp.WINDOW_BASE) {
                 activeMonitors().forEach(m => {
                     this.tabManager[m.index]?.show();
                 });
@@ -315,8 +329,8 @@ class App {
 
         });
 
-        global.display.connect('grab-op-end', (_display: Display, win: Window) => {
-            if(validWindow(win)) {
+        global.display.connect('grab-op-end', (_display: Display, win: Window, op: GrabOp) => {
+            if(validWindow(win) && op == GrabOp.WINDOW_BASE) {
                 activeMonitors().forEach(m => {
                     this.tabManager[m.index]?.hide();
                     this.tabManager[m.index]?.moveWindowToWidgetAtCursor(win);
@@ -390,133 +404,129 @@ class App {
     reloadMenu() {
         if (launcher == null) return;
         launcher.menu.removeAll();
-        let resetLayoutButton = new PopupMenu.PopupMenuItem(_("Reset Layout"));
-        let editLayoutButton = new PopupMenu.PopupMenuItem(_("Edit Layout"));
-        let saveLayoutButton = new PopupMenu.PopupMenuItem(_("Save Layout"));
-        let cancelEditingButton = new PopupMenu.PopupMenuItem(_("Cancel Editing"));
-        let newLayoutButton = new PopupMenu.PopupMenuItem(_("Create New Layout"));
+        // let resetLayoutButton = new PopupMenu.PopupMenuItem(_("Reset Layout"));
+        // let editLayoutButton = new PopupMenu.PopupMenuItem(_("Edit Layout"));
+        // let saveLayoutButton = new PopupMenu.PopupMenuItem(_("Save Layout"));
+        // let cancelEditingButton = new PopupMenu.PopupMenuItem(_("Cancel Editing"));
+        // let newLayoutButton = new PopupMenu.PopupMenuItem(_("Create New Layout"));
 
-        let renameLayoutButton = new PopupMenu.PopupMenuItem(_("Rename: " + this.currentLayout.name));
+        // let renameLayoutButton = new PopupMenu.PopupMenuItem(_("Rename: " + this.currentLayout.name));
 
-        let currentMonitorIndex = getCurrentMonitorIndex();
-        if (this.editor[currentMonitorIndex] != null) {
-            launcher.menu.addMenuItem(resetLayoutButton);
-            launcher.menu.addMenuItem(saveLayoutButton);
-            launcher.menu.addMenuItem(cancelEditingButton);
-        } else {
-            const monitorsCount = activeMonitors().length;
-            for(let mI = 0; mI < monitorsCount; mI++)
-            {
-                if(monitorsCount > 1) {
-                    let monitorName = new PopupMenu.PopupSubMenuMenuItem(_(`Monitor ${mI}`));
-                    launcher.menu.addMenuItem(monitorName);
+        const monitorsCount = activeMonitors().length;
 
-                    this.createLayoutMenuItems(mI).forEach(i => 
-                        (<any>monitorName).menu.addMenuItem(i));
-                } else {
-                    this.createLayoutMenuItems(mI).forEach(i =>
-                        launcher?.menu.addMenuItem(i));
-                }
+        for(let mI = 0; mI < monitorsCount; mI++)
+        {
+            if(monitorsCount > 1) {
+                let monitorName = new PopupMenu.PopupSubMenuMenuItem(_(`Monitor ${mI}`));
+                launcher.menu.addMenuItem(monitorName);
+
+                this.createLayoutMenuItems(mI).forEach(i => 
+                    (<any>monitorName).menu.addMenuItem(i));
+            } else {
+                this.createLayoutMenuItems(mI).forEach(i =>
+                    launcher?.menu.addMenuItem(i));
             }
-
-            let sep = new PopupMenu.PopupSeparatorMenuItem();
-            launcher.menu.addMenuItem(sep);
-            launcher.menu.addMenuItem(editLayoutButton);
-            launcher.menu.addMenuItem(renameLayoutButton);
-            launcher.menu.addMenuItem(newLayoutButton);
         }
 
+        let sep = new PopupMenu.PopupSeparatorMenuItem();
+        launcher.menu.addMenuItem(sep);
+        // launcher.menu.addMenuItem(editLayoutButton);
+        // launcher.menu.addMenuItem(renameLayoutButton);
+        // launcher.menu.addMenuItem(newLayoutButton);
 
-        renameLayoutButton.connect('activate', () => {
-            let dialog = new EntryDialog({
-                label: "test"
-            });
-            dialog.label.text = "Rename Layout " + this.currentLayout.name;
-            dialog.entry.text = this.currentLayout.name;
-            dialog.onOkay = (text: string) => {
-                this.currentLayout.name = text;
-                this.saveLayouts();
-                this.reloadMenu();
-            }
-            dialog.open(global.get_current_time());
-        });
 
-        newLayoutButton.connect('activate', () => {
-            let dialog = new EntryDialog();
-            dialog.label.text = "Create New Layout";
-            dialog.onOkay = (text: string) => {
-                this.layouts.definitions.push({
-                    name: text,
-                    type: 0,
-                    length: 100,
-                    items: [
-                        {
-                            type: 0,
-                            length: 100,
-                            items: []
-                        }
-                    ]
-                });
-                this.setLayout(this.layouts.definitions.length - 1);
-                this.saveLayouts();
-                this.reloadMenu();
-            }
-            dialog.open(global.get_current_time());
-        });
+        // renameLayoutButton.connect('activate', () => {
+        //     let dialog = new EntryDialog({
+        //         label: "test"
+        //     });
+        //     dialog.label.text = "Rename Layout " + this.currentLayout.name;
+        //     dialog.entry.text = this.currentLayout.name;
+        //     dialog.onOkay = (text: string) => {
+        //         this.currentLayout.name = text;
+        //         this.saveLayouts();
+        //         this.reloadMenu();
+        //     }
+        //     dialog.open(global.get_current_time());
+        // });
 
-        editLayoutButton.connect('activate', () => {
-            activeMonitors().forEach(m => {
-                this.editor[m.index]?.destroy();
-                this.editor[m.index] = new ZoneEditor(activeMonitors()[m.index], this.currentLayout, gridSettings[SETTINGS.WINDOW_MARGIN]);
-            });
+        // newLayoutButton.connect('activate', () => {
+        //     let dialog = new EntryDialog();
+        //     dialog.label.text = "Create New Layout";
+        //     dialog.onOkay = (text: string) => {
+        //         this.layouts.definitions.push({
+        //             name: text,
+        //             type: 0,
+        //             length: 100,
+        //             items: [
+        //                 {
+        //                     type: 0,
+        //                     length: 100,
+        //                     items: []
+        //                 }
+        //             ]
+        //         });
+        //         this.setLayout(this.layouts.definitions.length - 1);
+        //         this.saveLayouts();
+        //         this.reloadMenu();
+        //     }
+        //     dialog.open(global.get_current_time());
+        // });
 
-            var windows = WorkspaceManager.get_active_workspace().list_windows();
-            for (let i = 0; i < windows.length; i++) {
-                windows[i].minimize();
-            }
-            this.reloadMenu();
-        });
+        // NK: I don't need a GUI editor.
 
-        saveLayoutButton.connect('activate', () => {
-            this.saveLayouts();
-            this.setToCurrentWorkspace();
-            this.reloadMenu();
-        });
+        // editLayoutButton.connect('activate', () => {
+        //     activeMonitors().forEach(m => {
+        //         this.editor[m.index]?.destroy();
+        //         this.editor[m.index] = new ZoneEditor(activeMonitors()[m.index], this.currentLayout, gridSettings[SETTINGS.WINDOW_MARGIN]);
+        //     });
 
-        resetLayoutButton.connect('activate', () => {
-            activeMonitors().forEach(m => {
-                let editor = this.editor[m.index];
-                if (editor) {
-                    editor.destroy();
-                    editor.layoutItem = {
-                        type: 0,
-                        length: 100,
-                        items: [
-                            {
-                                type: 0,
-                                length: 100,
-                                items: [],
-                            }
-                        ]
-                    }
-                    editor.applyLayout(editor);
-                    this.reloadMenu();
-                }
-            });
-        });
+        //     var windows = WorkspaceManager.get_active_workspace().list_windows();
+        //     for (let i = 0; i < windows.length; i++) {
+        //         windows[i].minimize();
+        //     }
+        //     this.reloadMenu();
+        // });
 
-        cancelEditingButton.connect('activate', () => {
-            activeMonitors().forEach(m => {
-                this.editor[m.index]?.destroy();
-                this.editor[m.index] = null;
-            });
+        // saveLayoutButton.connect('activate', () => {
+        //     this.saveLayouts();
+        //     this.setToCurrentWorkspace();
+        //     this.reloadMenu();
+        // });
 
-            var windows = WorkspaceManager.get_active_workspace().list_windows();
-            for (let i = 0; i < windows.length; i++) {
-                windows[i].unminimize();
-            }
-            this.reloadMenu();
-        });
+        // resetLayoutButton.connect('activate', () => {
+        //     activeMonitors().forEach(m => {
+        //         let editor = this.editor[m.index];
+        //         if (editor) {
+        //             editor.destroy();
+        //             editor.layoutItem = {
+        //                 type: 0,
+        //                 length: 100,
+        //                 items: [
+        //                     {
+        //                         type: 0,
+        //                         length: 100,
+        //                         items: [],
+        //                     }
+        //                 ]
+        //             }
+        //             editor.applyLayout(editor);
+        //             this.reloadMenu();
+        //         }
+        //     });
+        // });
+
+        // cancelEditingButton.connect('activate', () => {
+        //     activeMonitors().forEach(m => {
+        //         this.editor[m.index]?.destroy();
+        //         this.editor[m.index] = null;
+        //     });
+
+        //     var windows = WorkspaceManager.get_active_workspace().list_windows();
+        //     for (let i = 0; i < windows.length; i++) {
+        //         windows[i].unminimize();
+        //     }
+        //     this.reloadMenu();
+        // });
     }
 
     createLayoutMenuItems(monitorIndex: number) : Array<any> {
@@ -539,18 +549,19 @@ class App {
     }
 
     saveLayouts() {
-        activeMonitors().forEach(m => {
-            this.editor[m.index]?.apply();
-            this.editor[m.index]?.destroy();
-            this.editor[m.index] = null;
-        });
+        // activeMonitors().forEach(m => {
+        //     this.editor[m.index]?.apply();
+        //     this.editor[m.index]?.destroy();
+        //     this.editor[m.index] = null;
+        // });
         GLib.file_set_contents(getCurrentPath()?.replace("/extension.js", "/layouts.json"), JSON.stringify(this.layouts));
         log(JSON.stringify(this.layouts));
 
-        var windows = WorkspaceManager.get_active_workspace().list_windows();
-        for (let i = 0; i < windows.length; i++) {
-            windows[i].unminimize();
-        }
+        /// NK: I'm not sure what the purpose of this is so I'm commenting it out.
+        // var windows = WorkspaceManager.get_active_workspace().list_windows();
+        // for (let i = 0; i < windows.length; i++) {
+        //     windows[i].unminimize();
+        // }
 
     }
 
@@ -558,7 +569,7 @@ class App {
         log("Extension disable begin");
         enabled = false;
         this.preview?.forEach(p => { p?.destroy(); p = null });
-        this.editor?.forEach(e => { e?.destroy(); e = null; });
+        // this.editor?.forEach(e => { e?.destroy(); e = null; });
         this.tabManager?.forEach(t => { t?.destroy(); t = null });
 
         if (this.workspaceSwitchedConnect) {

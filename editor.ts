@@ -176,6 +176,7 @@ export class Zone extends ZoneBase {
         super(layoutItem, parent);
         this.createWidget();
         Main.uiGroup.insert_child_above(this.widget, global.window_group);
+        this.widget.visible = false;
     }
 
     public createWidget(styleClass: string = 'grid-preview') {
@@ -265,7 +266,7 @@ export class TabbedZone extends Zone {
                 zoneTab.buttonWidget.width = this.tabWidth;
                 zoneTab.buttonWidget.x = x;
                 zoneTab.buttonWidget.y = this.y + this.margin;
-                zoneTab.buttonWidget.visible = true;
+                // zoneTab.buttonWidget.visible = true;
                 x += zoneTab.buttonWidget.width + this.margin;
             }
         }
@@ -548,7 +549,7 @@ export class ZoneAnchor {
     constructor(protected zoneGroup: ZoneGroup, protected zoneA: ZoneBase, protected zoneB: ZoneBase, protected margin: number) {
         this.widget = new St.Button({ style_class: 'size-button' });
         this.widget.label = " = ";
-        this.widget.visible = true;
+        // this.widget.visible = true;
         this.adjustSizes();
         this.widget.connect('button-press-event', () => {
             let [x, y] = global.get_pointer();
@@ -826,6 +827,7 @@ export class ZoneEditor extends ZoneDisplay {
 export class ZonePreview extends ZoneDisplay {
     constructor(monitor: Monitor, layout: LayoutItem, margin: number) {
         super(monitor, layout, margin);
+        this.show();
     }
 }
 

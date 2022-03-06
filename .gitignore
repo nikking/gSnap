@@ -4,3 +4,4 @@ bazel-bin
 bazel-gSnap
 bazel-out
 bazel-testlogs
+.vscode/settings.json

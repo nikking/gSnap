@@ -634,6 +634,14 @@ export enum MaximizeFlags {
 }
 
 /**
+ * https://gjs-docs.gnome.org/meta5~5_api/meta.grabop#default-keyboard_moving
+ */
+
+ export enum GrabOp {
+    WINDOW_BASE = 1
+}
+
+/**
  *
  * Based on https://developer.gnome.org/st/stable/st-st-box-layout.html.
  */

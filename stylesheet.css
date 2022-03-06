@@ -44,12 +44,12 @@
 
 .grid-preview
 {
-     background-color: rgba(12, 16, 194, 0.4);
+     background-color: rgba(76, 78, 199, 0.4);
      border: solid 1px rgba(12, 16, 194, 0.6);
 }
 
 .grid-preview:activate
 {
-    background-color: rgba(12, 16, 194, 0.4);
+    background-color: rgba(76, 78, 199, 0.4);
     border: solid 1px rgba(12, 16, 194, 0.6);
 }

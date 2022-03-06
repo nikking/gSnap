@@ -2,7 +2,7 @@
   "workspaces": [
     [
       {
-        "current": 3
+        "current": 4
       },
       {
         "current": 2
@@ -22,8 +22,7 @@
       "name": "None",
       "type": 0,
       "length": 100,
-      "items": [
-      ]
+      "items": []
     },
     {
       "name": "1 Column",
